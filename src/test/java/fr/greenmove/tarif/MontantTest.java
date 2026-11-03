@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-class MontantTest {
+class gMontantTest {
 
     @Test
     void un_euro_vaut_cent_centimes() {
