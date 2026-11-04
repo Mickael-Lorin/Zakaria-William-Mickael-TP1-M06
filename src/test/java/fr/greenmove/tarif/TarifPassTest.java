@@ -69,6 +69,15 @@ class TarifPassTest {
         assertEquals("durée négative", erreur.getMessage());
         verify(compteur, never()).enregistrerTrajetInclus(any(), any());
     }
-  
+
+    @Test
+    void le_premier_trajet_pass_de_12_minutes_est_gratuit_et_enregistrer(){
+        alice_a_un_pass_et_deja_fait(0);
+
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 12);
+        assertEquals(Montant.euros(0.00), prix);
+        verify(compteur).enregistrerTrajetInclus("alice", JOUR);
+    }
+
 
 }
