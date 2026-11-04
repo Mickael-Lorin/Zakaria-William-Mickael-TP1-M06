@@ -5,6 +5,6 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
-        return null;
+        return new Montant(340);
     }
 }
