@@ -114,4 +114,15 @@ class TarifPassTest {
         verify(compteur, never()).enregistrerTrajetInclus(any(),any());
     }
 
+    @Test
+    void la_reduction_abonne_s_applique_au_reste_a_payer_du_pass(){
+        alice_est_abonnee();
+        alice_a_un_pass_et_deja_fait(1);
+
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 30);
+
+        assertEquals(Montant.euros(1.60), prix);
+
+    }
+
 }
