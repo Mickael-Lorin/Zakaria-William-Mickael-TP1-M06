@@ -27,4 +27,13 @@ class TarifPassTest {
 
         assertThat(prix).isEqualTo(Montant.euros(3.40));
     }
+
+    @Test
+    void une_trottinette_de_12_minutes_sans_abonnement_coute_4_euros() {
+        TarifPass tarif = new TarifPass(new FauxAbonnements(false, false), compteur, horloge);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
+
+        assertThat(prix).isEqualTo(Montant.euros(4));
+    }
 }
