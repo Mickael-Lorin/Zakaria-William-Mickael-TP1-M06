@@ -15,6 +15,9 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
+        if (minutes < 0) {
+            throw new IllegalArgumentException("durée négative");
+        }
         Montant tarifMinute = type == TypeVehicule.VELO ? Montant.euros(0.20) : Montant.euros(0.25);
         Montant total = Montant.euros(1.00).plus(tarifMinute.fois(minutes)).plafonneA(Montant.euros(15.00));
         if (abonnements.estAbonne(usager)) {
