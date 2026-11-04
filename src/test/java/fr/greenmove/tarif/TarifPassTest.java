@@ -1,8 +1,8 @@
 package fr.greenmove.tarif;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,10 @@ class TarifPassTest {
 
     private void alice_est_abonnee() {
         when(abonnements.estAbonne("alice")).thenReturn(true);
+    }
+    private void alice_a_un_pass_et_deja_fait(int trajets) {
+        when(abonnements.aUnPassActif("alice", JOUR)).thenReturn(true);
+        when(compteur.trajetsInclus("alice",JOUR)).thenReturn(1);
     }
 
     @Test
@@ -53,6 +57,17 @@ class TarifPassTest {
         Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 12);
 
         assertEquals(Montant.euros(2.72), prix);
+    }
+
+    @Test
+    void une_duree_negative_est_refusee_et_rien_n_est_enregistre() {
+        alice_a_un_pass_et_deja_fait(0);
+
+        IllegalArgumentException erreur = assertThrows(IllegalArgumentException.class,
+                () -> tarifPass.prix("alice", TypeVehicule.VELO, -1));
+
+        assertEquals("durée négative", erreur.getMessage());
+        verify(compteur, never()).enregistrerTrajetInclus(any(), any());
     }
   
 
