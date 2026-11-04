@@ -20,4 +20,10 @@ class TarifPassTest {
 
         assertEquals(Montant.euros(3.40), prix);
     }
+    @Test
+    void une_trottinette_de_10_minutes_coute_3_50_euros() {
+        Montant prix = tarifPass.prix("alice", TypeVehicule.TROTTINETTE, 10);
+
+        assertEquals(Montant.euros(3.50), prix);
+    }
 }
