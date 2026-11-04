@@ -79,5 +79,12 @@ class TarifPassTest {
         verify(compteur).enregistrerTrajetInclus("alice", JOUR);
     }
 
+    @Test
+    void un_trajt_pass_de_30_minutes_facture_les_10_minutes_au_dela_de_20(){
+        alice_a_un_pass_et_deja_fait(1);
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 30);
+        assertEquals(Montant.euros(2.00), prix);
+    }
+
 
 }
