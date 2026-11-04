@@ -1,5 +1,7 @@
 package fr.greenmove.tarif;
 
+import java.time.LocalDate;
+
 public class TarifPass {
 
     private final Abonnements abonnements;
@@ -18,6 +20,13 @@ public class TarifPass {
         if (minutes < 0) {
             throw new IllegalArgumentException("durée négative");
         }
+
+        LocalDate jour = horloge.aujourdhui();
+        if (abonnements.aUnPassActif(usager, jour)) {
+            compteur.enregistrerTrajetInclus(usager, jour);
+            return Montant.ZERO;
+        }
+
         Montant tarifMinute = type == TypeVehicule.VELO ? Montant.euros(0.20) : Montant.euros(0.25);
         Montant total = Montant.euros(1.00).plus(tarifMinute.fois(minutes)).plafonneA(Montant.euros(15.00));
         if (abonnements.estAbonne(usager)) {
