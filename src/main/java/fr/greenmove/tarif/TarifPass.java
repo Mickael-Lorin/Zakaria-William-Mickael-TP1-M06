@@ -13,6 +13,7 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
-        return Montant.euros(1.00).plus(Montant.euros(0.20).fois(minutes));
+        Montant tarifMinute = type == TypeVehicule.VELO ? Montant.euros(0.20) : Montant.euros(0.25);
+        return Montant.euros(1.00).plus(tarifMinute.fois(minutes));
     }
 }
