@@ -13,6 +13,6 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
-        return Montant.ZERO;
+        return Montant.euros(3.40);
     }
 }
