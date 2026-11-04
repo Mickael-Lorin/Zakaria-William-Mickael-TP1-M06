@@ -26,4 +26,10 @@ class TarifPassTest {
 
         assertEquals(Montant.euros(3.50), prix);
     }
+
+    @Test
+    void un_velo_de_90_minutes_coute_15_euros_plafond_atteint(){
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 90);
+        assertEquals(Montant.euros(15.00), prix);
+    }
 }
