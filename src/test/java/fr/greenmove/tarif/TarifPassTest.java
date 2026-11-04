@@ -22,7 +22,7 @@ class TarifPassTest {
     }
     private void alice_a_un_pass_et_deja_fait(int trajets) {
         when(abonnements.aUnPassActif("alice", JOUR)).thenReturn(true);
-        when(compteur.trajetsInclus("alice",JOUR)).thenReturn(1);
+        when(compteur.trajetsInclus("alice",JOUR)).thenReturn(trajets);
     }
 
     @Test
