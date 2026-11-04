@@ -125,4 +125,11 @@ class TarifPassTest {
 
     }
 
+    @Test
+    void le_plafond_de_15_euros_s_applique_aussi_aux_trajets_pass() {
+        alice_a_un_pass_et_deja_fait(0);
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 120);
+        assertEquals(Montant.euros(15.00), prix);
+    }
+
 }
