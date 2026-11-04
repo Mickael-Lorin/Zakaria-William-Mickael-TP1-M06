@@ -24,7 +24,7 @@ public class TarifPass {
         Montant tarifMinute = type == TypeVehicule.VELO ? Montant.euros(0.20) : Montant.euros(0.25);
 
         LocalDate jour = horloge.aujourdhui();
-        if(abonnements.aUnPassActif(usager, jour)){
+        if(abonnements.aUnPassActif(usager,jour) && compteur.trajetsInclus(usager, jour)<2){
             compteur.enregistrerTrajetInclus(usager,jour);
             int minutesFacturees = Math.max(0, minutes - 20);
             return tarifMinute.fois(minutesFacturees);
