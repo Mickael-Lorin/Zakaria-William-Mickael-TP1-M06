@@ -17,17 +17,18 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
-        if (minutes < 0) {
+        if(minutes < 0) {
             throw new IllegalArgumentException("durée négative");
         }
 
-        LocalDate jour = horloge.aujourdhui();
-        if (abonnements.aUnPassActif(usager, jour)) {
-            compteur.enregistrerTrajetInclus(usager, jour);
-            return Montant.ZERO;
-        }
-
         Montant tarifMinute = type == TypeVehicule.VELO ? Montant.euros(0.20) : Montant.euros(0.25);
+
+        LocalDate jour = horloge.aujourdhui();
+        if(abonnements.aUnPassActif(usager, jour)){
+            compteur.enregistrerTrajetInclus(usager,jour);
+            int minutesFacturees = Math.max(0, minutes - 20);
+            return tarifMinute.fois(minutesFacturees);
+        }
         Montant total = Montant.euros(1.00).plus(tarifMinute.fois(minutes)).plafonneA(Montant.euros(15.00));
         if (abonnements.estAbonne(usager)) {
             return total.moinsPourcent(20);
