@@ -86,5 +86,32 @@ class TarifPassTest {
         assertEquals(Montant.euros(2.00), prix);
     }
 
+    @Test
+    void la_vingtieme_minute_est_encore_offerte() {
+        alice_a_un_pass_et_deja_fait(0);
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 20);
+        assertEquals(Montant.euros(0.00), prix);
+    }
+
+    @Test
+    void la_vingt_et_unieme_minute_est_facturee() {
+        alice_a_un_pass_et_deja_fait(0);
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 21);
+        assertEquals(Montant.euros(0.20), prix);
+    }
+    @Test
+    void une_trotinette_pass_de_25_minutes_facture_5_minutes_a_0_25_euros(){
+        alice_a_un_pass_et_deja_fait(0);
+        Montant prix = tarifPass.prix("alice",TypeVehicule.TROTTINETTE, 25);
+        assertEquals(Montant.euros(1.25), prix);
+    }
+
+    @Test
+    void le_troisieme_trajet_du_jour_est_au_tarif_normal_et_non_enregistre(){
+        alice_a_un_pass_et_deja_fait(2);
+        Montant prix = tarifPass.prix("alice", TypeVehicule.VELO, 12);
+        assertEquals(Montant.euros(3.40), prix);
+        verify(compteur, never()).enregistrerTrajetInclus(any(),any());
+    }
 
 }
