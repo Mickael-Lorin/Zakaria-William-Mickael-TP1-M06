@@ -82,4 +82,14 @@ class TarifPassTest {
 
         assertThat(prix).isEqualTo(Montant.euros(0.00));
     }
+
+    @Test
+    void avec_le_pass_une_trottinette_de_25_minutes_coute_1_euro_25() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.TROTTINETTE, 25);
+
+        assertThat(prix).isEqualTo(Montant.euros(1.25));
+    }
 }
