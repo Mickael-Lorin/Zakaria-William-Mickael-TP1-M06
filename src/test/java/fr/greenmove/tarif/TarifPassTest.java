@@ -19,9 +19,16 @@ class TarifPassTest {
         @Override public boolean aUnPassActif(String usager, LocalDate jour) { return pass; }
     }
 
+    private static final Abonnements SANS_PASS_NON_ABONNE = new FauxAbonnements(false, false);
+    private static final Abonnements SANS_PASS_ABONNE = new FauxAbonnements(true, false);
+
+    private TarifPass tarifPour(Abonnements abonnements) {
+        return new TarifPass(abonnements, compteur, horloge);
+    }
+
     @Test
     void un_velo_de_12_minutes_sans_abonnement_coute_3_euros_40() {
-        TarifPass tarif = new TarifPass(new FauxAbonnements(false, false), compteur, horloge);
+        TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
 
@@ -30,7 +37,7 @@ class TarifPassTest {
 
     @Test
     void une_trottinette_de_12_minutes_sans_abonnement_coute_4_euros() {
-        TarifPass tarif = new TarifPass(new FauxAbonnements(false, false), compteur, horloge);
+        TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
         Montant prix = tarif.prix("alice", TypeVehicule.TROTTINETTE, 12);
 
@@ -39,7 +46,7 @@ class TarifPassTest {
 
     @Test
     void un_velo_de_90_minutes_est_plafonne_a_15_euros() {
-        TarifPass tarif = new TarifPass(new FauxAbonnements(false, false), compteur, horloge);
+        TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 90);
 
@@ -48,7 +55,7 @@ class TarifPassTest {
 
     @Test
     void un_velo_de_70_minutes_atteint_exactement_le_plafond_de_15_euros() {
-        TarifPass tarif = new TarifPass(new FauxAbonnements(false, false), compteur, horloge);
+        TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 70);
 
@@ -57,7 +64,7 @@ class TarifPassTest {
 
     @Test
     void un_abonne_paie_un_velo_de_12_minutes_2_euros_72() {
-        TarifPass tarif = new TarifPass(new FauxAbonnements(true, false), compteur, horloge);
+        TarifPass tarif = tarifPour(SANS_PASS_ABONNE);
 
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
 
