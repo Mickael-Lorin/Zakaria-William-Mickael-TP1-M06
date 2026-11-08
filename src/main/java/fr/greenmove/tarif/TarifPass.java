@@ -8,12 +8,17 @@ public class TarifPass {
     private static final int REDUCTION_ABONNE = 20;
 
     private final Abonnements abonnements;
+    private final Horloge horloge;
 
     public TarifPass(Abonnements abonnements, CompteurTrajets compteur, Horloge horloge) {
         this.abonnements = abonnements;
+        this.horloge = horloge;
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
+        if (abonnements.aUnPassActif(usager, horloge.aujourdhui())) {
+            return Montant.ZERO;
+        }
         Montant montant = DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
         if (abonnements.estAbonne(usager)) {
             return montant.moinsPourcent(REDUCTION_ABONNE);
