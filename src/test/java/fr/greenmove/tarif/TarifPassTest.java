@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 class TarifPassTest {
 
     private static final LocalDate JOUR = LocalDate.of(2027, 9, 1);
+    private static final String ALICE = "alice";
 
     private final CompteurTrajets compteur = mock(CompteurTrajets.class);
     private final Horloge horloge = () -> JOUR;
@@ -35,11 +36,15 @@ class TarifPassTest {
         return new TarifPass(abonnements, compteur, horloge);
     }
 
+    private void trajetsInclusDejaFaits(int nombre) {
+        when(compteur.trajetsInclus(ALICE, JOUR)).thenReturn(nombre);
+    }
+
     @Test
     void un_velo_de_12_minutes_sans_abonnement_coute_3_euros_40() {
         TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(3.40));
     }
@@ -48,7 +53,7 @@ class TarifPassTest {
     void une_trottinette_de_12_minutes_sans_abonnement_coute_4_euros() {
         TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.TROTTINETTE, 12);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.TROTTINETTE, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(4.00));
     }
@@ -57,7 +62,7 @@ class TarifPassTest {
     void un_velo_de_90_minutes_est_plafonne_a_15_euros() {
         TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 90);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 90);
 
         assertThat(prix).isEqualTo(Montant.euros(15.00));
     }
@@ -66,7 +71,7 @@ class TarifPassTest {
     void un_velo_de_70_minutes_atteint_exactement_le_plafond_de_15_euros() {
         TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 70);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 70);
 
         assertThat(prix).isEqualTo(Montant.euros(15.00));
     }
@@ -75,87 +80,87 @@ class TarifPassTest {
     void un_abonne_paie_un_velo_de_12_minutes_2_euros_72() {
         TarifPass tarif = tarifPour(SANS_PASS_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(2.72));
     }
 
     @Test
     void avec_le_pass_le_premier_trajet_velo_de_12_minutes_est_gratuit() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(0.00));
     }
 
     @Test
     void avec_le_pass_une_trottinette_de_25_minutes_coute_1_euro_25() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.TROTTINETTE, 25);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.TROTTINETTE, 25);
 
         assertThat(prix).isEqualTo(Montant.euros(1.25));
     }
 
     @Test
     void avec_le_pass_un_velo_de_20_minutes_est_gratuit() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 20);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 20);
 
         assertThat(prix).isEqualTo(Montant.euros(0.00));
     }
 
     @Test
     void avec_le_pass_un_velo_de_21_minutes_coute_20_centimes() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 21);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 21);
 
         assertThat(prix).isEqualTo(Montant.euros(0.20));
     }
 
     @Test
     void avec_le_pass_le_deuxieme_trajet_velo_de_30_minutes_coute_2_euros() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(1);
+        trajetsInclusDejaFaits(1);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 30);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 30);
 
         assertThat(prix).isEqualTo(Montant.euros(2.00));
     }
 
     @Test
     void avec_le_pass_le_troisieme_trajet_velo_de_12_minutes_est_au_tarif_normal() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(2);
+        trajetsInclusDejaFaits(2);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(3.40));
     }
 
     @Test
     void un_trajet_inclus_gratuit_est_enregistre_une_fois_au_compteur_pour_le_jour_de_l_horloge() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        tarif.prix("alice", TypeVehicule.VELO, 12);
+        tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
-        verify(compteur, times(1)).enregistrerTrajetInclus("alice", JOUR);
+        verify(compteur, times(1)).enregistrerTrajetInclus(ALICE, JOUR);
     }
 
     @Test
     void le_troisieme_trajet_du_jour_n_est_pas_enregistre_au_compteur() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(2);
+        trajetsInclusDejaFaits(2);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        tarif.prix("alice", TypeVehicule.VELO, 12);
+        tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
         verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
     }
@@ -164,27 +169,27 @@ class TarifPassTest {
     void un_trajet_sans_pass_n_est_pas_enregistre_au_compteur() {
         TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
-        tarif.prix("alice", TypeVehicule.VELO, 12);
+        tarif.prix(ALICE, TypeVehicule.VELO, 12);
 
         verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
     }
 
     @Test
     void avec_le_pass_et_abonne_le_premier_trajet_velo_de_30_minutes_coute_1_euro_60() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 30);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 30);
 
         assertThat(prix).isEqualTo(Montant.euros(1.60));
     }
 
     @Test
     void avec_le_pass_un_velo_de_120_minutes_est_plafonne_a_15_euros() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 120);
+        Montant prix = tarif.prix(ALICE, TypeVehicule.VELO, 120);
 
         assertThat(prix).isEqualTo(Montant.euros(15.00));
     }
@@ -193,7 +198,7 @@ class TarifPassTest {
     void une_duree_negative_est_refusee() {
         TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
 
-        Throwable erreur = catchThrowable(() -> tarif.prix("alice", TypeVehicule.VELO, -1));
+        Throwable erreur = catchThrowable(() -> tarif.prix(ALICE, TypeVehicule.VELO, -1));
 
         assertThat(erreur)
                 .isInstanceOf(IllegalArgumentException.class)
@@ -202,10 +207,10 @@ class TarifPassTest {
 
     @Test
     void une_duree_negative_avec_le_pass_n_est_pas_enregistree_au_compteur() {
-        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        trajetsInclusDejaFaits(0);
         TarifPass tarif = tarifPour(PASS_NON_ABONNE);
 
-        catchThrowable(() -> tarif.prix("alice", TypeVehicule.VELO, -1));
+        catchThrowable(() -> tarif.prix(ALICE, TypeVehicule.VELO, -1));
 
         verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
     }
