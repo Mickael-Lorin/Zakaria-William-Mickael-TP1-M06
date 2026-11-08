@@ -199,4 +199,14 @@ class TarifPassTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("durée négative");
     }
+
+    @Test
+    void une_duree_negative_avec_le_pass_n_est_pas_enregistree_au_compteur() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        catchThrowable(() -> tarif.prix("alice", TypeVehicule.VELO, -1));
+
+        verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
+    }
 }
