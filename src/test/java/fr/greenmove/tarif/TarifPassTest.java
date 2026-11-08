@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -186,5 +187,16 @@ class TarifPassTest {
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 120);
 
         assertThat(prix).isEqualTo(Montant.euros(15.00));
+    }
+
+    @Test
+    void une_duree_negative_est_refusee() {
+        TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
+
+        Throwable erreur = catchThrowable(() -> tarif.prix("alice", TypeVehicule.VELO, -1));
+
+        assertThat(erreur)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("durée négative");
     }
 }
