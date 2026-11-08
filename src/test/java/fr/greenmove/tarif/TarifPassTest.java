@@ -5,7 +5,12 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class TarifPassTest {
@@ -131,5 +136,15 @@ class TarifPassTest {
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(3.40));
+    }
+
+    @Test
+    void un_trajet_inclus_gratuit_est_enregistre_une_fois_au_compteur_pour_le_jour_de_l_horloge() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        tarif.prix("alice", TypeVehicule.VELO, 12);
+
+        verify(compteur, times(1)).enregistrerTrajetInclus("alice", JOUR);
     }
 }
