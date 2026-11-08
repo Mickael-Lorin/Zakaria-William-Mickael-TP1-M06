@@ -20,6 +20,9 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
+        if (minutes < 0) {
+            throw new IllegalArgumentException("durée négative");
+        }
         Montant montant;
         if (abonnements.aUnPassActif(usager, horloge.aujourdhui())
                 && compteur.trajetsInclus(usager, horloge.aujourdhui()) < TRAJETS_INCLUS_PAR_JOUR) {
