@@ -6,6 +6,7 @@ public class TarifPass {
     private static final Montant TARIF_TROTTINETTE = Montant.euros(0.25);
     private static final Montant PLAFOND = Montant.euros(15.00);
     private static final int REDUCTION_ABONNE = 20;
+    private static final int MINUTES_OFFERTES = 20;
 
     private final Abonnements abonnements;
     private final Horloge horloge;
@@ -17,7 +18,7 @@ public class TarifPass {
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
         if (abonnements.aUnPassActif(usager, horloge.aujourdhui())) {
-            return Montant.ZERO;
+            return tarifMinute(type).fois(Math.max(0, minutes - MINUTES_OFFERTES));
         }
         Montant montant = DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
         if (abonnements.estAbonne(usager)) {
