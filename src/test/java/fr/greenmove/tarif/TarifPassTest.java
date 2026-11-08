@@ -147,4 +147,23 @@ class TarifPassTest {
 
         verify(compteur, times(1)).enregistrerTrajetInclus("alice", JOUR);
     }
+
+    @Test
+    void le_troisieme_trajet_du_jour_n_est_pas_enregistre_au_compteur() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(2);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        tarif.prix("alice", TypeVehicule.VELO, 12);
+
+        verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
+    }
+
+    @Test
+    void un_trajet_sans_pass_n_est_pas_enregistre_au_compteur() {
+        TarifPass tarif = tarifPour(SANS_PASS_NON_ABONNE);
+
+        tarif.prix("alice", TypeVehicule.VELO, 12);
+
+        verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
+    }
 }
