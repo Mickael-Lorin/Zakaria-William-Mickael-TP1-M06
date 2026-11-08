@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TarifPassTest {
 
@@ -21,6 +22,7 @@ class TarifPassTest {
 
     private static final Abonnements SANS_PASS_NON_ABONNE = new FauxAbonnements(false, false);
     private static final Abonnements SANS_PASS_ABONNE = new FauxAbonnements(true, false);
+    private static final Abonnements PASS_NON_ABONNE = new FauxAbonnements(false, true);
 
     private TarifPass tarifPour(Abonnements abonnements) {
         return new TarifPass(abonnements, compteur, horloge);
@@ -69,5 +71,15 @@ class TarifPassTest {
         Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
 
         assertThat(prix).isEqualTo(Montant.euros(2.72));
+    }
+
+    @Test
+    void avec_le_pass_le_premier_trajet_velo_de_12_minutes_est_gratuit() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 12);
+
+        assertThat(prix).isEqualTo(Montant.euros(0.00));
     }
 }
