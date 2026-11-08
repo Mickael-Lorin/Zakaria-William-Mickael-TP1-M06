@@ -7,17 +7,21 @@ public class TarifPass {
     private static final Montant PLAFOND = Montant.euros(15.00);
     private static final int REDUCTION_ABONNE = 20;
     private static final int MINUTES_OFFERTES = 20;
+    private static final int TRAJETS_INCLUS_PAR_JOUR = 2;
 
     private final Abonnements abonnements;
+    private final CompteurTrajets compteur;
     private final Horloge horloge;
 
     public TarifPass(Abonnements abonnements, CompteurTrajets compteur, Horloge horloge) {
         this.abonnements = abonnements;
+        this.compteur = compteur;
         this.horloge = horloge;
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
-        if (abonnements.aUnPassActif(usager, horloge.aujourdhui())) {
+        if (abonnements.aUnPassActif(usager, horloge.aujourdhui())
+                && compteur.trajetsInclus(usager, horloge.aujourdhui()) < TRAJETS_INCLUS_PAR_JOUR) {
             return tarifMinute(type).fois(Math.max(0, minutes - MINUTES_OFFERTES));
         }
         Montant montant = DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
