@@ -28,6 +28,7 @@ class TarifPassTest {
     private static final Abonnements SANS_PASS_NON_ABONNE = new FauxAbonnements(false, false);
     private static final Abonnements SANS_PASS_ABONNE = new FauxAbonnements(true, false);
     private static final Abonnements PASS_NON_ABONNE = new FauxAbonnements(false, true);
+    private static final Abonnements PASS_ABONNE = new FauxAbonnements(true, true);
 
     private TarifPass tarifPour(Abonnements abonnements) {
         return new TarifPass(abonnements, compteur, horloge);
@@ -165,5 +166,15 @@ class TarifPassTest {
         tarif.prix("alice", TypeVehicule.VELO, 12);
 
         verify(compteur, never()).enregistrerTrajetInclus(anyString(), any());
+    }
+
+    @Test
+    void avec_le_pass_et_abonne_le_premier_trajet_velo_de_30_minutes_coute_1_euro_60() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 30);
+
+        assertThat(prix).isEqualTo(Montant.euros(1.60));
     }
 }
