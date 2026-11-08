@@ -5,12 +5,20 @@ public class TarifPass {
     private static final Montant TARIF_VELO = Montant.euros(0.20);
     private static final Montant TARIF_TROTTINETTE = Montant.euros(0.25);
     private static final Montant PLAFOND = Montant.euros(15.00);
+    private static final int REDUCTION_ABONNE = 20;
+
+    private final Abonnements abonnements;
 
     public TarifPass(Abonnements abonnements, CompteurTrajets compteur, Horloge horloge) {
+        this.abonnements = abonnements;
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
-        return DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
+        Montant montant = DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
+        if (abonnements.estAbonne(usager)) {
+            return montant.moinsPourcent(REDUCTION_ABONNE);
+        }
+        return montant;
     }
 
     private Montant tarifMinute(TypeVehicule type) {
