@@ -45,4 +45,13 @@ class TarifPassTest {
 
         assertThat(prix).isEqualTo(Montant.euros(15.00));
     }
+
+    @Test
+    void un_velo_de_70_minutes_atteint_exactement_le_plafond_de_15_euros() {
+        TarifPass tarif = new TarifPass(new FauxAbonnements(false, false), compteur, horloge);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 70);
+
+        assertThat(prix).isEqualTo(Montant.euros(15.00));
+    }
 }
