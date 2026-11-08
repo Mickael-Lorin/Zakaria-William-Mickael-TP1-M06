@@ -112,4 +112,14 @@ class TarifPassTest {
 
         assertThat(prix).isEqualTo(Montant.euros(0.20));
     }
+
+    @Test
+    void avec_le_pass_le_deuxieme_trajet_velo_de_30_minutes_coute_2_euros() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(1);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 30);
+
+        assertThat(prix).isEqualTo(Montant.euros(2.00));
+    }
 }
