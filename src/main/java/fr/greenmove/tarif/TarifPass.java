@@ -20,12 +20,14 @@ public class TarifPass {
     }
 
     public Montant prix(String usager, TypeVehicule type, int minutes) {
+        Montant montant;
         if (abonnements.aUnPassActif(usager, horloge.aujourdhui())
                 && compteur.trajetsInclus(usager, horloge.aujourdhui()) < TRAJETS_INCLUS_PAR_JOUR) {
             compteur.enregistrerTrajetInclus(usager, horloge.aujourdhui());
-            return tarifMinute(type).fois(Math.max(0, minutes - MINUTES_OFFERTES));
+            montant = tarifMinute(type).fois(Math.max(0, minutes - MINUTES_OFFERTES));
+        } else {
+            montant = DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
         }
-        Montant montant = DEVERROUILLAGE.plus(tarifMinute(type).fois(minutes)).plafonneA(PLAFOND);
         if (abonnements.estAbonne(usager)) {
             return montant.moinsPourcent(REDUCTION_ABONNE);
         }
