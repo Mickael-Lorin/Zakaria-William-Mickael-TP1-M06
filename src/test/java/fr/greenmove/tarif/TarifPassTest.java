@@ -177,4 +177,14 @@ class TarifPassTest {
 
         assertThat(prix).isEqualTo(Montant.euros(1.60));
     }
+
+    @Test
+    void avec_le_pass_un_velo_de_120_minutes_est_plafonne_a_15_euros() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 120);
+
+        assertThat(prix).isEqualTo(Montant.euros(15.00));
+    }
 }
