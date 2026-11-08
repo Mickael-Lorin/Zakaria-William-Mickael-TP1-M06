@@ -92,4 +92,24 @@ class TarifPassTest {
 
         assertThat(prix).isEqualTo(Montant.euros(1.25));
     }
+
+    @Test
+    void avec_le_pass_un_velo_de_20_minutes_est_gratuit() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 20);
+
+        assertThat(prix).isEqualTo(Montant.euros(0.00));
+    }
+
+    @Test
+    void avec_le_pass_un_velo_de_21_minutes_coute_20_centimes() {
+        when(compteur.trajetsInclus("alice", JOUR)).thenReturn(0);
+        TarifPass tarif = tarifPour(PASS_NON_ABONNE);
+
+        Montant prix = tarif.prix("alice", TypeVehicule.VELO, 21);
+
+        assertThat(prix).isEqualTo(Montant.euros(0.20));
+    }
 }
